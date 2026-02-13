@@ -2,91 +2,78 @@
 <html>
 <head>
 <style>
-
-body {
-  text-align: center;
-  overflow: hidden;
+body{
+  text-align:center;
+  overflow:hidden;
 }
 
 /* BOTONES */
-.button {
-  border: none;
-  padding: 22px 50px;
-  font-size: 28px;
-  margin: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.button{
+  border:none;
+  padding:22px 50px;
+  font-size:28px;
+  margin:15px;
+  cursor:pointer;
+  transition:all .25s ease;
   font-family:'Lucida Handwriting';
 }
 
-/* BOTÓN SÍ */
-.button1 {
-  background-color: white; 
-  color: pink; 
-  border: 3px solid pink;
+/* SÍ */
+.button1{
+  background:#fff;
+  color:pink;
+  border:3px solid pink;
+}
+.button1:hover{
+  background:pink;
+  color:#fff;
+}
+.button1:disabled{
+  opacity:.5;
+  cursor:not-allowed;
 }
 
-.button1:hover {
-  background-color: pink;
-  color: white;
+/* NO */
+.button2{
+  background:#fff;
+  color:red;
+  border:3px solid red;
 }
-
-.button1:disabled {
-  opacity: 0.5;
-}
-
-/* BOTÓN NO */
-.button2 {
-  background-color: white; 
-  color: red; 
-  border: 3px solid red;
-}
-
-.button2:hover {
-  background-color: red;
-  color: white;
+.button2:hover{
+  background:red;
+  color:#fff;
 }
 
 /* BANNER */
 #toast{
-  position: fixed;
-  left: 50%;
-  bottom: 40px;
-  transform: translateX(-50%);
-  background: white;
-  border: 2px solid red;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-family: 'Lucida Handwriting';
-  font-size: 20px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  position:fixed;
+  left:50%;
+  bottom:40px;
+  transform:translateX(-50%);
+  background:#fff;
+  border:2px solid red;
+  padding:12px 20px;
+  border-radius:12px;
+  font-family:'Lucida Handwriting';
+  font-size:20px;
+  opacity:0;
+  transition:opacity .35s ease;
+  pointer-events:none;
 }
-
-#toast.show{
-  opacity: 1;
-}
+#toast.show{ opacity:1; }
 
 /* CORAZONES */
-.heart {
-  position: fixed;
-  color: red;
-  font-size: 32px;
-  animation: floatUp 3s linear forwards;
-  pointer-events: none;
+.heart{
+  position:fixed;
+  color:red;
+  font-size:32px;
+  animation:floatUp 3s linear forwards;
+  pointer-events:none;
 }
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-300px) scale(1.5);
-    opacity: 0;
-  }
+@keyframes floatUp{
+  0%{ transform:translateY(0) scale(1); opacity:1; }
+  100%{ transform:translateY(-300px) scale(1.5); opacity:0; }
 }
-
 </style>
 </head>
 
@@ -101,14 +88,13 @@ body {
 </div>
 
 <div>
-  <button id="yesBtn" class="button button1" disabled>❤️</button>
+  <button id="yesBtn" class="button button1" disabled>Sí amor</button>
   <button id="noBtn" class="button button2">No</button>
 </div>
 
-<div id="toast">Han pasado 10 segundos… vuelve a intentarlo 😉</div>
+<div id="toast">Vuelve a intentarlo amor</div>
 
 <script>
-
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const mainImage = document.getElementById("mainImage");
@@ -116,66 +102,86 @@ const toast = document.getElementById("toast");
 
 let started = false;
 
-/* Mover botón */
-function moveButton() {
-  const maxX = window.innerWidth - noBtn.offsetWidth;
-  const maxY = window.innerHeight - noBtn.offsetHeight;
-
-  const randomX = Math.random() * maxX;
-  const randomY = Math.random() * maxY;
-
-  noBtn.style.left = randomX + "px";
-  noBtn.style.top = randomY + "px";
-}
-
-/* Mostrar banner */
-function showToast() {
+function showToast(){
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-/* Cuando intentan acercarse al NO */
-noBtn.addEventListener("mouseover", function() {
+function moveButton(){
+  const maxX = window.innerWidth - noBtn.offsetWidth;
+  const maxY = window.innerHeight - noBtn.offsetHeight;
 
-  if (!started) {
-    started = true;
-    noBtn.style.position = "absolute";
+  const x = Math.random() * Math.max(0, maxX);
+  const y = Math.random() * Math.max(0, maxY);
 
-    setTimeout(function() {
-      yesBtn.disabled = false;
-      showToast();
-    }, 10000);
-  }
+  noBtn.style.left = x + "px";
+  noBtn.style.top  = y + "px";
+}
 
+/* Arranca “huida” al primer intento real */
+function startEscapeIfNeeded(){
+  if (started) return;
+  started = true;
+
+  // Sacamos el botón del flujo y lo hacemos “imposible”
+  noBtn.style.position = "fixed";
+  noBtn.style.zIndex = "9999";
+
+  // Lo movemos ya para que no se pueda clicar “al inicio”
+  moveButton();
+
+  // Activa el SÍ a los 10s y muestra banner
+  setTimeout(() => {
+    yesBtn.disabled = false;
+    showToast();
+  }, 10000);
+}
+
+/*
+  Evitar que se pueda “pillar”:
+  - pointerenter: en cuanto el puntero entra, se mueve
+  - mousemove: si se acercan (aunque sea dentro), se mueve de nuevo
+  - touchstart: en móvil, se mueve antes de registrar el toque
+  - mousedown: por si acaso, mueve antes del click
+*/
+noBtn.addEventListener("pointerenter", () => {
+  startEscapeIfNeeded();
   moveButton();
 });
 
-/* Cuando pulsan ❤️ */
-yesBtn.addEventListener("click", function() {
-
-  mainImage.src = "Gatito2.jpeg";
-
-  for (let i = 0; i < 30; i++) {
-    createHeart();
-  }
+noBtn.addEventListener("mousemove", () => {
+  if (started) moveButton();
 });
 
-/* Crear corazones */
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.classList.add("heart");
-  heart.innerHTML = "❤️";
+noBtn.addEventListener("mousedown", (e) => {
+  startEscapeIfNeeded();
+  moveButton();
+  e.preventDefault();
+});
 
+noBtn.addEventListener("touchstart", (e) => {
+  startEscapeIfNeeded();
+  moveButton();
+  e.preventDefault();
+}, { passive:false });
+
+/* Pulsa ❤️ */
+yesBtn.addEventListener("click", () => {
+  mainImage.src = "./Gatito2.jpeg"; // asegúrate que el nombre coincide exacto
+
+  for (let i = 0; i < 30; i++) createHeart();
+});
+
+/* Corazones */
+function createHeart(){
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "❤️";
   heart.style.left = Math.random() * window.innerWidth + "px";
   heart.style.bottom = "0px";
-
   document.body.appendChild(heart);
-
-  setTimeout(() => {
-    heart.remove();
-  }, 3000);
+  setTimeout(() => heart.remove(), 3000);
 }
-
 </script>
 
 </body>
