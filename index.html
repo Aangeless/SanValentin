@@ -2,24 +2,60 @@
 <html>
 <head>
 <style>
-.button {
-  border: none;
-  color: white;
-  padding: 16px 32px;
+
+body {
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-vertical-align: middle;
+  overflow: hidden;
 }
 
+/* BOTONES GENERALES */
+.button {
+  border: none;
+  padding: 22px 50px;
+  font-size: 24px;
+  margin: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family:'Lucida Handwriting';
+}
+
+/* BOTÓN SÍ */
+.button1 {
+  background-color: white; 
+  color: pink; 
+  border: 3px solid pink;
+}
+
+/* Hover del botón Sí */
+.button1:hover {
+  background-color: pink;
+  color: white;
+}
+
+/* Cuando esté disabled */
+.button1:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* BOTÓN NO */
+.button2 {
+  background-color: white; 
+  color: red; 
+  border: 3px solid red;
+  position: relative;
+}
+
+.button2:hover {
+  background-color: red;
+  color: white;
+}
+
+/* CORAZONES */
 .heart {
   position: fixed;
   color: red;
-  font-size: 24px;
+  font-size: 30px;
   animation: floatUp 3s linear forwards;
   pointer-events: none;
 }
@@ -35,73 +71,72 @@ vertical-align: middle;
   }
 }
 
-.button1 {
-  background-color: white; 
-  color: pink; 
-  border: 2px solid pink;
-}
-
-.button2 {
-  background-color: white; 
-  color: red; 
-  border: 2px solid red;
-}
-
-#noBtn {
-  position: absolute;
-}
-
-.button2:hover {
-  background-color: red;
-  color: white;
-}
-
 </style>
 </head>
+
 <body>
 
-<h1 style="color:red;font-family:'Brush Script MT', cursive;text-align: center;">¿quieres ser mi San Valentín?</h1>
+<h1 style="color:red;font-family:'Brush Script MT', cursive;">
+¿Quieres ser mi San Valentín?
+</h1>
 
-<div style="text-align: center;">
-  <img id="mainImage" src="Gatito.jpeg" width="500" height="600">
+<div>
+  <img id="mainImage" src="Gatito.jpeg" width="450">
 </div>
 
-
-<div style="text-align:center;">
-  <button id="yesBtn" class="button button1" style="font-family:'Lucida Handwriting'" disabled>
-  <button id="noBtn" class="button button2" style="font-family:'Lucida Handwriting'">No</button>
+<div>
+  <button id="yesBtn" class="button button1" disabled>❤️</button>
+  <button id="noBtn" class="button button2">No</button>
 </div>
 
 <script>
+
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const mainImage = document.getElementById("mainImage");
 
-noBtn.addEventListener("mouseover", function() {
-  const maxX = window.innerWidth - this.offsetWidth;
-  const maxY = window.innerHeight - this.offsetHeight;
+let moveActivated = false;
+
+/* Cuando intentan clickear NO */
+noBtn.addEventListener("click", function() {
+
+  if (!moveActivated) {
+    moveActivated = true;
+
+    /* Empieza contador de 10 segundos */
+    setTimeout(function() {
+      yesBtn.disabled = false;
+    }, 10000);
+
+    /* Empieza a moverse */
+    noBtn.style.position = "absolute";
+  }
+
+  moveButton();
+});
+
+/* Función para mover el botón */
+function moveButton() {
+  const maxX = window.innerWidth - noBtn.offsetWidth;
+  const maxY = window.innerHeight - noBtn.offsetHeight;
 
   const randomX = Math.random() * maxX;
   const randomY = Math.random() * maxY;
 
-  this.style.left = randomX + "px";
-  this.style.top = randomY + "px";
-});
+  noBtn.style.left = randomX + "px";
+  noBtn.style.top = randomY + "px";
+}
 
-noBtn.addEventListener("click", function() {
-  setTimeout(function() {
-    yesBtn.disabled = false;
-  }, 10000);
-});
-
+/* Cuando pulsan ❤️ */
 yesBtn.addEventListener("click", function() {
   mainImage.src = "Gatito2.jpeg";
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 25; i++) {
     createHeart();
   }
 });
 
+/* Crear corazones */
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
@@ -116,6 +151,8 @@ function createHeart() {
     heart.remove();
   }, 3000);
 }
+
 </script>
+
 </body>
 </html>
