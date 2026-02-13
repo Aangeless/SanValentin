@@ -8,12 +8,12 @@ body {
   overflow: hidden;
 }
 
-/* BOTONES GENERALES */
+/* BOTONES */
 .button {
   border: none;
   padding: 22px 50px;
-  font-size: 24px;
-  margin: 10px;
+  font-size: 28px;
+  margin: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family:'Lucida Handwriting';
@@ -26,16 +26,13 @@ body {
   border: 3px solid pink;
 }
 
-/* Hover del botón Sí */
 .button1:hover {
   background-color: pink;
   color: white;
 }
 
-/* Cuando esté disabled */
 .button1:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
 }
 
 /* BOTÓN NO */
@@ -43,7 +40,6 @@ body {
   background-color: white; 
   color: red; 
   border: 3px solid red;
-  position: relative;
 }
 
 .button2:hover {
@@ -51,11 +47,31 @@ body {
   color: white;
 }
 
+/* BANNER */
+#toast{
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  background: white;
+  border: 2px solid red;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: 'Lucida Handwriting';
+  font-size: 20px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#toast.show{
+  opacity: 1;
+}
+
 /* CORAZONES */
 .heart {
   position: fixed;
   color: red;
-  font-size: 30px;
+  font-size: 32px;
   animation: floatUp 3s linear forwards;
   pointer-events: none;
 }
@@ -85,38 +101,22 @@ body {
 </div>
 
 <div>
-  <button id="yesBtn" class="button button1" disabled>Sí amor</button>
+  <button id="yesBtn" class="button button1" disabled>❤️</button>
   <button id="noBtn" class="button button2">No</button>
 </div>
+
+<div id="toast">Han pasado 10 segundos… vuelve a intentarlo 😉</div>
 
 <script>
 
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const mainImage = document.getElementById("mainImage");
+const toast = document.getElementById("toast");
 
-let moveActivated = false;
+let started = false;
 
-/* Cuando intentan clickear NO */
-noBtn.addEventListener("click", function() {
-
-  if (!moveActivated) {
-    moveActivated = true;
-
-    /* Empieza contador de 10 segundos */
-    setTimeout(function() {
-  yesBtn.disabled = false;
-  alert("Vuelve a intentarlo amor");
-}, 10000);
-
-    /* Empieza a moverse */
-    noBtn.style.position = "absolute";
-  }
-
-  moveButton();
-});
-
-/* Función para mover el botón */
+/* Mover botón */
 function moveButton() {
   const maxX = window.innerWidth - noBtn.offsetWidth;
   const maxY = window.innerHeight - noBtn.offsetHeight;
@@ -128,11 +128,34 @@ function moveButton() {
   noBtn.style.top = randomY + "px";
 }
 
+/* Mostrar banner */
+function showToast() {
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+/* Cuando intentan acercarse al NO */
+noBtn.addEventListener("mouseover", function() {
+
+  if (!started) {
+    started = true;
+    noBtn.style.position = "absolute";
+
+    setTimeout(function() {
+      yesBtn.disabled = false;
+      showToast();
+    }, 10000);
+  }
+
+  moveButton();
+});
+
 /* Cuando pulsan ❤️ */
 yesBtn.addEventListener("click", function() {
-  mainImage.src = "Gatito2.jpg";
 
-  for (let i = 0; i < 25; i++) {
+  mainImage.src = "Gatito2.jpeg";
+
+  for (let i = 0; i < 30; i++) {
     createHeart();
   }
 });
@@ -157,5 +180,3 @@ function createHeart() {
 
 </body>
 </html>
-
-
