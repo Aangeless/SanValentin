@@ -85,7 +85,7 @@ body {
 </div>
 
 <div>
-  <button id="yesBtn" class="button button1" disabled>❤️</button>
+  <button id="yesBtn" class="button button1" disabled>Sí amor</button>
   <button id="noBtn" class="button button2">No</button>
 </div>
 
@@ -105,8 +105,9 @@ noBtn.addEventListener("click", function() {
 
     /* Empieza contador de 10 segundos */
     setTimeout(function() {
-      yesBtn.disabled = false;
-    }, 10000);
+  yesBtn.disabled = false;
+  alert("Vuelve a intentarlo amor");
+}, 10000);
 
     /* Empieza a moverse */
     noBtn.style.position = "absolute";
@@ -156,4 +157,5 @@ function createHeart() {
 
 </body>
 </html>
+
 
